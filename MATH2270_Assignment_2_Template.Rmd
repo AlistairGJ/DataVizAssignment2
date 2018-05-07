@@ -4,26 +4,380 @@ subtitle: "Visualising Open Data"
 output: html_notebook
 ---
 
+<style> body { text-align: justify} </style>
+
 ## Student Details
 
-* Student Name (s3000000)
+* Student Name (s3644119)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## About
+---
+https://www.kaggle.com/zhangjuefei/birds-bones-and-living-habits
+
+Context
+There are many kinds of birds: pigeons, ducks, ostriches, penguins... Some are good at flying, others can't fly but run fast. Some swim under water, others wading in shallow pool.
+
+According to their living environments and living habits, birds are classified into different ecological groups. There are 8 ecological groups of birds:
+---
+* Swimming Birds
+* Wading Birds
+* Terrestrial Birds
+* Raptors
+* Scansorial Birds
+* Singing Birds
+* Cursorial Birds (not included in dataset)
+* Marine Birds (not included in dataset)
+---
+
+First 6 groups are main and are covered by this dataset.
+
+Apparently, birds belong to different ecological groups have different appearances: flying birds have strong wings and wading birds have long legs. Their living habits are somewhat reflected in their bones' shapes. As data scientists we may think of examining the underlying relationship between sizes of bones and ecological groups , and recognising birds' ecological groups by their bones' shapes.
+
+Content
+There are 420 birds contained in this dataset. Each bird is represented by 10 measurements (features):
+---
+* Length and Diameter of Humerus
+* Length and Diameter of Ulna
+* Length and Diameter of Femur
+* Length and Diameter of Tibiotarsus
+* Length and Diameter of Tarsometatarsus
+---
+All measurements are continuous float numbers (mm) with missing values represented by empty strings. The skeletons of this dataset are collections of Natural History Museum of Los Angeles County. They belong to 21 orders, 153 genera, 245 species.
+
+Each bird has a label for its ecological group
+---
+* SW: Swimming Birds
+* W: Wading Birds
+* T: Terrestrial Birds
+* R: Raptors
+* P: Scansorial Birds
+* SO: Singing Birds
+---
 
 ```{r}
 # Load your packages
+library(tidyr)
+library(dplyr)
+library(knitr)
+library(GGally)
+library(ggplot2)
+library(ggridges)
 ```
 
 ## Data
 
 ```{r}
 # Load your data and prepare for visualisation
+birdDS <- read.csv("bird.csv")
 ```
 
+## Exploring the Data
+
+```{r}
+# Load your data and prepare for visualisation
+head(birdDS)
+```
+
+```{r}
+# Load your data and prepare for visualisation
+colnames(birdDS)
+```
+
+```{r}
+colNamesFull <- c("ID", "HumerusLength", "HumerusDiameter", "UlnaLength", "UlnaDiameter",
+                  "FemurLength", "FemurDiameter", "TibiotarusLength", "TibiotarusDiameter",
+                  "TarsometatarusLength", "TarsometatarusDiameter", "EcologicalBirdType")
+```
+
+
+```{r}
+# Load your data and prepare for visualisation
+summary(birdDS)
+```
+
+```{r}
+# Load your data and prepare for visualisation
+str(birdDS)
+```
+
+```{r}
+# Load your data and prepare for visualisation
+head(birdDS)
+```
+
+```{r}
+# Check the species ID
+unique(birdDS$type)
+```
+
+#### Determine the mean values
+
+```{r}
+# Determining the mean values
+meanValueByType <- aggregate(surveys_combined_year$weight ~ species_id, 
+                                     surveys_combined_year, mean, na.action = na.omit)
+```
+
+```{r}
+# Checking the output
+average_by_species_year
+```
+
+```{r}
+# SW - Swimming Birds
+SWbirds <- subset(birdDS, birdDS$type == "SW") # SW - Swimming Birds
+Wbirds <- subset(birdDS, birdDS$type == "W") # W - Wading Birds
+Tbirds <- subset(birdDS, birdDS$type == "T") # T - Terrestrial Birds
+Rbirds <- subset(birdDS, birdDS$type == "R") # R - Raptors
+Pbirds <- subset(birdDS, birdDS$type == "P") # P - Scansorial Birds
+SObirds <- subset(birdDS, birdDS$type == "SO") # SO - Singing Birds
+```
+
+```{r}
+summary(SWbirds)
+summary(Wbirds) # Two NA
+summary(Tbirds) 
+summary(Rbirds) # Four NA
+summary(Pbirds)
+summary(SObirds) # Nine NA
+```
+
+```{r}
+# Filling NA - Rbirds
+Wbirds$feml[is.na(Wbirds$feml)] <- mean(Wbirds$feml, na.rm = TRUE)
+Wbirds$femw[is.na(Wbirds$femw)] <- mean(Wbirds$femw, na.rm = TRUE)
+```
+
+```{r}
+# Filling NA - Rbirds
+Rbirds$ulnal[is.na(Rbirds$ulnal)] <- mean(Rbirds$ulnal, na.rm = TRUE)
+Rbirds$ulnaw[is.na(Rbirds$ulnaw)] <- mean(Rbirds$ulnaw, na.rm = TRUE)
+Rbirds$tarl[is.na(Rbirds$tarl)] <- mean(Rbirds$tarl, na.rm = TRUE)
+Rbirds$tarw[is.na(Rbirds$tarw)] <- mean(Rbirds$tarw, na.rm = TRUE)
+```
+
+```{r}
+# Filling NA - SObirds
+SObirds$huml[is.na(SObirds$huml)] <- mean(SObirds$huml, na.rm = TRUE)
+SObirds$humw[is.na(SObirds$humw)] <- mean(SObirds$humw, na.rm = TRUE)
+SObirds$ulnal[is.na(SObirds$ulnal)] <- mean(SObirds$ulnal, na.rm = TRUE)
+SObirds$ulnaw[is.na(SObirds$ulnaw)] <- mean(SObirds$ulnaw, na.rm = TRUE)
+SObirds$feml[is.na(SObirds$feml)] <- mean(SObirds$feml, na.rm = TRUE)
+SObirds$tibl[is.na(SObirds$tibl)] <- mean(SObirds$tibl, na.rm = TRUE)
+SObirds$tibw[is.na(SObirds$tibw)] <- mean(SObirds$tibw, na.rm = TRUE)
+```
+
+```{r}
+birdDS_clean <- rbind(SWbirds, Wbirds, Tbirds, Rbirds, Pbirds, SObirds)
+```
+
+```{r}
+summary(birdDS_clean)
+```
+
+```{r}
+ggplot(data = birdDS_clean, aes(x = type, y = huml)) + geom_boxplot()
+```
+
+```{r}
+ggplot(data = birdDS_clean, aes(x = type, y = humw)) + geom_boxplot()
+```
+
+```{r}
+ggplot(data = birdDS_clean, aes(x = type, y = ulnal)) + geom_boxplot()
+```
+
+```{r}
+ggplot(data = birdDS_clean, aes(x = type, y = ulnaw)) + geom_boxplot()
+```
+
+```{r}
+ggplot(data = birdDS_clean, aes(x = type, y = feml)) + geom_boxplot()
+```
+
+```{r}
+ggplot(data = birdDS_clean, aes(x = type, y = femw)) + geom_boxplot()
+```
+
+
+
+
+
+# Could split out the length and width variables...
 
 ## Visualisation
 
 ```{r}
-# Visualise Your Data
+colnames(birdDS_clean)
 ```
 
+```{r}
+allMeasurements <- c("huml", "humw", "ulnal", "ulnaw", "feml",  "femw",  "tibl",  "tibw",  "tarl",  "tarw")
+lengthMeasurements <- c("huml", "ulnal", "feml",  "tibl",  "tarl")
+widthMeasurements <- c("humw", "ulnaw",  "femw", "tibw", "tarw")
+```
+
+
+
+```{r}
+# Visualise Your Data
+scatter_matrix <- ggpairs(data = birdDS_clean,
+        columns = allMeasurements,
+        mapping = aes(colour = type),
+        diag = list(continuous = wrap("densityDiag", alpha=I(0.1)), mapping = ggplot2::aes(fill=type)),
+        upper = list(continuous = wrap("density", alpha = I(0.5)), combo = "box"),
+        lower = list(continuous = wrap("points", alpha = I(0.4), size = 0.1)))
+scatter_matrix_adjusted <- scatter_matrix + theme(panel.spacing=grid::unit(0,"lines"),
+                       axis.text = element_text(size = rel(0.5)),
+                       strip.text = element_text(face = "bold", size=7),
+                       strip.text.x = element_text(margin = margin(.1, 0, .1, 0, "cm")),
+                       strip.text.y = element_text(margin = margin(0, .1, 0, .1, "cm")))
+scatter_matrix_adjusted + theme(panel.border = element_rect(fill = NA, colour = "grey30", size = 0.2))
+```
+
+```{r}
+# Visualise Your Data
+scatter_matrix_length <- ggpairs(data = birdDS_clean,
+        columns = lengthMeasurements,
+        mapping = aes(colour = type),
+        diag = list(continuous = wrap("densityDiag", alpha=I(0.1)), mapping = ggplot2::aes(fill=type)),
+        upper = list(continuous = wrap("density", alpha = I(0.5)), combo = "box"),
+        lower = list(continuous = wrap("points", alpha = I(0.4), size = 0.1)))
+scatter_matrix_length_adjusted <- scatter_matrix_length + theme(panel.spacing=grid::unit(0,"lines"),
+                       axis.text = element_text(size = rel(0.5)),
+                       strip.text = element_text(face = "bold", size=7),
+                       strip.text.x = element_text(margin = margin(.1, 0, .1, 0, "cm")),
+                       strip.text.y = element_text(margin = margin(0, .1, 0, .1, "cm")))
+scatter_matrix_length_adjusted + theme(panel.border = element_rect(fill = NA, colour = "grey30", size = 0.2))
+```
+
+```{r}
+# Visualise Your Data
+scatter_matrix_width <- ggpairs(data = birdDS_clean,
+        columns = widthMeasurements,
+        mapping = aes(colour = type),
+        diag = list(continuous = wrap("densityDiag", alpha=I(0.1)), mapping = ggplot2::aes(fill=type)),
+        upper = list(continuous = wrap("density", alpha = I(0.5)), combo = "box"),
+        lower = list(continuous = wrap("points", alpha = I(0.4), size = 0.1)))
+scatter_matrix_width_adjusted <- scatter_matrix_width + theme(panel.spacing=grid::unit(0,"lines"),
+                       axis.text = element_text(size = rel(0.5)),
+                       strip.text = element_text(face = "bold", size=7),
+                       strip.text.x = element_text(margin = margin(.1, 0, .1, 0, "cm")),
+                       strip.text.y = element_text(margin = margin(0, .1, 0, .1, "cm")))
+scatter_matrix_width_adjusted + theme(panel.border = element_rect(fill = NA, colour = "grey30", size = 0.2))
+```
+
+* SW: Swimming Birds
+* W: Wading Birds
+* T: Terrestrial Birds
+* R: Raptors
+* P: Scansorial Birds
+* SO: Singing Birds
+
+```{r}
+# Did not work
+test_reorder <- birdDS_clean[,c(12,2,3,4,5,6,7,8,9,10,11,1)]
+```
+
+```{r}
+# Did not work
+test <- test_reorder %>% gather("huml", "humw", "ulnal", "ulnaw", "feml",  "femw",  "tibl",  "tibw",  "tarl",  "tarw", 
+                   key = "type", value = "measurement")
+```
+
+```{r}
+#dim(SWbirds) # L = 116 * 
+#dim(Wbirds) # L = 65
+#dim(Tbirds)
+#dim(Rbirds)
+#dim(Pbirds)
+#dim(SObirds) 
+
+
+SWbirdsLong <- SWbirds %>% gather("huml", "humw", "ulnal", "ulnaw", "feml",  "femw",  "tibl",  "tibw",  "tarl",  "tarw", 
+                   key = "type", value = "measurement")
+SWbirdsLong$id <- 'SW'
+WbirdsLong <- Wbirds %>% gather("huml", "humw", "ulnal", "ulnaw", "feml",  "femw",  "tibl",  "tibw",  "tarl",  "tarw", 
+                   key = "type", value = "measurement")
+WbirdsLong$id <- 'W'
+TbirdsLong <- Tbirds %>% gather("huml", "humw", "ulnal", "ulnaw", "feml",  "femw",  "tibl",  "tibw",  "tarl",  "tarw", 
+                   key = "type", value = "measurement")
+TbirdsLong$id <- 'T'
+RbirdsLong <- Rbirds %>% gather("huml", "humw", "ulnal", "ulnaw", "feml",  "femw",  "tibl",  "tibw",  "tarl",  "tarw", 
+                   key = "type", value = "measurement")
+RbirdsLong$id <- 'R'
+PbirdsLong <- Pbirds %>% gather("huml", "humw", "ulnal", "ulnaw", "feml",  "femw",  "tibl",  "tibw",  "tarl",  "tarw", 
+                   key = "type", value = "measurement")
+PbirdsLong$id <- 'P'
+SObirdsLong <- SObirds %>% gather("huml", "humw", "ulnal", "ulnaw", "feml",  "femw",  "tibl",  "tibw",  "tarl",  "tarw", 
+                   key = "type", value = "measurement")
+SObirdsLong$id <- 'SO'
+```
+
+```{r}
+birdDS_Long <- rbind(SWbirdsLong, WbirdsLong, TbirdsLong, RbirdsLong, PbirdsLong, SObirdsLong)
+```
+
+```{r}
+summary(birdDS_Long)
+```
+
+```{r}
+colnames(birds)
+```
+
+
+
+```{r}
+ggNew <- ggplot(data = , aes(x=, y=, fill = type))
+ggNew + geom_density_ridges(aes(x = Number), 
+           alpha = .8, color = "white") +
+  theme_ridges(grid = FALSE)
+```
+
+http://davemcg.github.io/post/let-s-plot-5-ridgeline-density-plots/
+https://feedyeti.com/hashtag.php?q=ggridges
+https://stackoverflow.com/questions/46012951/temperature-plot-error-in-funxi-object-y-not-found
+http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/ # scale_fill_brewer(palette="Spectral")
+http://ggplot2.tidyverse.org/reference/scale_brewer.html
+http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf
+http://clayford.github.io/dwir/dwr_05_combine_merge_rehsape_data.html
+https://twitter.com/@eatonjw
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Acknowledgements
+This dataset is provided by Dr. D. Liu of Beijing Museum of Natural History.
 
 
