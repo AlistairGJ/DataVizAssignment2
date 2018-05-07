@@ -285,8 +285,8 @@ test_reorder <- birdDS_clean[,c(12,2,3,4,5,6,7,8,9,10,11,1)]
 
 ```{r}
 # Did not work
-test <- test_reorder %>% gather("huml", "humw", "ulnal", "ulnaw", "feml",  "femw",  "tibl",  "tibw",  "tarl",  "tarw", 
-                   key = "type", value = "measurement")
+test <- birdDS_clean %>% gather("huml", "humw", "ulnal", "ulnaw", "feml",  "femw",  "tibl",  "tibw",  "tarl",  "tarw", 
+                   key = "id", value = "measurement")
 ```
 
 ```{r}
@@ -327,17 +327,67 @@ summary(birdDS_Long)
 ```
 
 ```{r}
-colnames(birds)
+colnames(birdDS_Long) <- c("birdType", "bone", "measurement")
 ```
-
 
 
 ```{r}
-ggNew <- ggplot(data = , aes(x=, y=, fill = type))
-ggNew + geom_density_ridges(aes(x = Number), 
+ggNew <- ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = bone, fill = birdType))
+ggNew + geom_density_ridges(aes(x = bone), 
            alpha = .8, color = "white") +
   theme_ridges(grid = FALSE)
 ```
+
+```{r}
+ggNew <- ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = birdType, fill = bone))
+ggNew + geom_density_ridges(aes(x = bone), 
+           alpha = .8, color = "white") +
+  theme_ridges(grid = FALSE)
+```
+
+```{r}
+ggNew <- ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = birdType, fill = bone))
+ggNew + geom_density_ridges(aes(x = measurement), alpha = .8, color = "white") +
+  theme_ridges(grid = FALSE)
+```
+
+```{r}
+ggNew <- ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = bone, fill = birdType))
+ggNew + geom_density_ridges(aes(x = measurement), alpha = .8, color = "white") +
+  theme_ridges(grid = FALSE)
+```
+
+```{r}
+ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = bone, fill = birdType)) + 
+   geom_density_ridges2(scale = 1) +
+   theme_minimal(base_size = 14) + theme(axis.text.y = element_text(vjust = 0)) +
+   scale_x_continuous(expand = c(0.01, 0)) +
+   coord_cartesian(xlim = c(0, 200)) +  
+   scale_y_discrete(expand = c(0.01, 0))
+
+```
+
+
+```{r}
+ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = bone, fill = birdType)) + 
+   geom_density_ridges2(scale = 1) +
+   theme_minimal(base_size = 14) + theme(axis.text.y = element_text(vjust = 0)) +
+   scale_x_continuous(expand = c(0.01, 0)) +
+   coord_cartesian(xlim = c(0, 200)) +  
+   scale_y_discrete(expand = c(0.01, 0)) + 
+  facet_grid(.~birdType)
+```
+
+```{r}
+ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = birdType, fill = bone)) + 
+   geom_density_ridges2(scale = 1) +
+   theme_minimal(base_size = 14) + theme(axis.text.y = element_text(vjust = 0)) +
+   scale_x_continuous(expand = c(0.01, 0)) +
+   coord_cartesian(xlim = c(0, 200)) +  
+   scale_y_discrete(expand = c(0.01, 0)) + 
+  facet_grid(.~bone)
+```
+
 
 http://davemcg.github.io/post/let-s-plot-5-ridgeline-density-plots/
 https://feedyeti.com/hashtag.php?q=ggridges
