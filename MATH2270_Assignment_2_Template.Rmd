@@ -397,6 +397,18 @@ http://ggplot2.tidyverse.org/reference/scale_brewer.html
 http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf
 http://clayford.github.io/dwir/dwr_05_combine_merge_rehsape_data.html
 https://twitter.com/@eatonjw
+https://stackoverflow.com/questions/46012951/temperature-plot-error-in-funxi-object-y-not-found
+https://feedyeti.com/hashtag.php?q=ggjoy
+https://homepage.divms.uiowa.edu/~luke/classes/STAT4580/boxetc.html
+https://zhuanlan.zhihu.com/p/32115772 
+
+
+```{r}
+ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = birdType, fill = bone)) + 
+  geom_density_ridges(alpha=0.6) + 
+  coord_cartesian(xlim = c(0, 200)) +  
+  theme_ridges() + scale_fill_brewer(palette = 'Set1')
+```
 
 
 
