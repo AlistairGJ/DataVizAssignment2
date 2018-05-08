@@ -118,13 +118,13 @@ unique(birdDS$type)
 
 ```{r}
 # Determining the mean values
-meanValueByType <- aggregate(surveys_combined_year$weight ~ species_id, 
-                                     surveys_combined_year, mean, na.action = na.omit)
+#meanValueByType <- aggregate(surveys_combined_year$weight ~ species_id, 
+#                                     surveys_combined_year, mean, na.action = na.omit)
 ```
 
 ```{r}
 # Checking the output
-average_by_species_year
+#average_by_species_year
 ```
 
 ```{r}
@@ -411,14 +411,69 @@ ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = birdType, fill = b
 ```
 
 
+```{r}
+# Need to add two BOOLEAN columns
+# OR
+# Length and Width in one column... (this!)
+birdDS_Long$measurementType <- sapply(strsplit(as.character(birdDS_Long$bone), ""), tail, 1)
+
+birdDS_Long$boneAlone = substr(birdDS_Long$bone,1,nchar(birdDS_Long$bone)-1)
+
+(aes(y = Drug, x=log2(Area), group=Well.names, fill=DMSO))
+
+```
+
+```{r}
+ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = birdType, fill = measurementType)) + 
+   geom_density_ridges2(scale = 1) +
+   theme_minimal(base_size = 14) + theme(axis.text.y = element_text(vjust = 0)) +
+   scale_x_continuous(expand = c(0.01, 0)) +
+   coord_cartesian(xlim = c(0, 200)) +  
+   scale_y_discrete(expand = c(0.01, 0)) + 
+  facet_grid(.~boneAlone)
+```
+
+```{r}
+ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = boneAlone, fill = measurementType)) + 
+   geom_density_ridges2(scale = 1) +
+   theme_minimal(base_size = 14) + theme(axis.text.y = element_text(vjust = 0)) +
+   scale_x_continuous(expand = c(0.01, 0)) +
+   coord_cartesian(xlim = c(0, 200)) +  
+   scale_y_discrete(expand = c(0.01, 0)) + 
+  facet_grid(.~birdType)
+```
 
 
+```{r}
+ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = boneAlone, fill = measurementType)) + 
+  geom_density_ridges2(scale = 1, alpha=0.6) +
+  theme_minimal(base_size = 14) + theme(axis.text.y = element_text(vjust = 0)) +
+  scale_x_continuous(expand = c(0.01, 0)) +
+  coord_cartesian(xlim = c(0, 200)) +  
+  scale_y_discrete(expand = c(0.01, 0)) + 
+  facet_grid(.~birdType) +
+  theme_ridges() + 
+  scale_fill_brewer(palette = 'Set1')
+```
 
 
+df() --> Shiny will know looking for a reactive element 
 
 
-
-
+```{r}
+ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = boneAlone, fill = measurementType)) + 
+  geom_density_ridges2(scale = 1, alpha=0.6) +
+  theme_minimal(base_size = 14) + 
+  theme(axis.text.y = element_text(vjust = 0)) +
+  scale_x_continuous(expand = c(0.01, 0)) +
+  coord_cartesian(xlim = c(0, 200)) +  
+  scale_y_discrete(expand = c(0.01, 0)) + 
+  facet_grid(.~birdType) +
+  theme_ridges() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  theme(legend.position="none") +
+  scale_fill_brewer(palette = 'Set1')
+```
 
 
 
