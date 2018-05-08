@@ -476,12 +476,41 @@ ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = boneAlone, fill = 
 ```
 
 
+```{r}
+ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = boneAlone, fill = birdType)) + 
+  geom_density_ridges2(scale = 1, alpha=0.6) +
+  theme_minimal(base_size = 14) + theme(axis.text.y = element_text(vjust = 0)) +
+  scale_x_continuous(expand = c(0.01, 0)) +
+  coord_cartesian(xlim = c(0, 200)) +  
+  scale_y_discrete(expand = c(0.01, 0)) + 
+  facet_grid(.~measurementType) +
+  theme_ridges() + 
+  scale_fill_brewer(palette = 'Set1')
+```
 
+```{r}
+ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = birdType, fill = boneAlone)) + 
+  geom_density_ridges2(scale = 1, alpha=0.6) +
+  theme_minimal(base_size = 14) + theme(axis.text.y = element_text(vjust = 0)) +
+  scale_x_continuous(expand = c(0.01, 0)) +
+  coord_cartesian(xlim = c(0, 200)) +  
+  scale_y_discrete(expand = c(0.01, 0)) + 
+  facet_grid(.~measurementType) +
+  theme_ridges() + 
+  scale_fill_brewer(palette = 'Set1')
+```
 
-
-
-
-
+```{r}
+ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = birdType, fill = measurementType)) + 
+  geom_density_ridges2(scale = 1, alpha=0.6) +
+  theme_minimal(base_size = 14) + theme(axis.text.y = element_text(vjust = 0)) +
+  scale_x_continuous(expand = c(0.01, 0)) +
+  coord_cartesian(xlim = c(0, 200)) +  
+  scale_y_discrete(expand = c(0.01, 0)) + 
+  facet_grid(.~boneAlone) +
+  theme_ridges() + 
+  scale_fill_brewer(palette = 'Set1')
+```
 
 
 
