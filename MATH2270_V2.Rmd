@@ -496,29 +496,79 @@ ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = birdType, fill = b
   coord_cartesian(xlim = c(0, 200)) +  
   scale_y_discrete(expand = c(0.01, 0)) + 
   facet_grid(.~measurementType) +
-  theme_ridges() + 
+  theme_ridges() + # This gives text at top and RHS + grey boxes for upper text
   scale_fill_brewer(palette = 'Set1')
 ```
 
-```{r}
-ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = birdType, fill = measurementType)) + 
-  geom_density_ridges2(scale = 1, alpha=0.6) +
+```{r, out.width="1920px", out.height="1080px"}
+birdsPlot <- ggplot(data = birdDS_Long, 
+                    aes(x=birdDS_Long$measurement, 
+                        y = birdType, 
+                        fill = measurementType))
+birdsPlot + geom_density_ridges2(scale = 1, alpha=0.6) +
   theme_minimal(base_size = 14) + theme(axis.text.y = element_text(vjust = 0)) +
   scale_x_continuous(expand = c(0.01, 0)) +
   coord_cartesian(xlim = c(0, 200)) +  
   scale_y_discrete(expand = c(0.01, 0)) + 
   facet_grid(.~boneAlone) +
-  theme_ridges() + 
+  #theme_ridges() + 
+  theme(legend.title = element_blank()) +
   scale_fill_brewer(palette = 'Set1')
 ```
 
+```{r, out.width="1920px", out.height="1080px"}
+birdsPlot <- ggplot(data = birdDS_Long, 
+                    aes(x=birdDS_Long$measurement, 
+                        y = birdType, 
+                        fill = measurementType))
+birdsPlot <- birdsPlot + geom_density_ridges2(scale = 0.9, alpha=0.6, colour = 'white', size = 0.1) +
+  theme(axis.text.y = element_text(vjust = 0)) +
+  #theme_minimal(base_size = 14) +
+  scale_x_continuous(expand = c(0.01, 0)) +
+  coord_cartesian(xlim = c(0, 150)) +  
+  scale_y_discrete(expand = c(0.01, 0)) + 
+  facet_grid(.~boneAlone) +
+  theme(legend.title = element_blank()) +
+  theme(legend.position='none') +
+  scale_fill_brewer(palette = 'Set1')
+
+birdsPlot <- birdsPlot + theme(panel.spacing=grid::unit(0.3,"lines"),
+                       axis.text = element_text(size = rel(0.5)),
+                       strip.text = element_text(face = "bold", size=11),
+                       strip.text.x = element_text(margin = margin(.1, 0, .1, 0, "cm")),
+                       strip.text.y = element_text(margin = margin(0, .1, 0, .1, "cm")))
+birdsPlot + theme(panel.border = element_rect(fill = NA, colour = "grey30", size = 0.1))
+```
+
+ftp://cran.r-project.org/pub/R/web/packages/ggridges/ggridges.pdf 
 
 
+```{r, out.width="1920px", out.height="1080px"}
+library(viridis)
+birdsPlot <- ggplot(data = birdDS_Long, 
+                    aes(x=birdDS_Long$measurement, 
+                        y = birdType, 
+                        fill = 0.5 - abs(0.5-..ecdf..)))
+birdsPlot <- birdsPlot + stat_density_ridges(geom = "density_ridges_gradient", calc_ecdf = TRUE) +
+  scale_fill_viridis(name = "Tail probability", direction = -1) +
+  theme(axis.text.y = element_text(vjust = 0)) +
+  theme_minimal(base_size = 14) +
+  scale_x_continuous(expand = c(0.01, 0)) +
+  coord_cartesian(xlim = c(0, 150)) +  
+  scale_y_discrete(expand = c(0.01, 0)) + 
+  facet_grid(.~bone) +
+  theme(legend.title = element_blank()) +
+  theme(legend.position='none') 
+  scale_fill_brewer(palette = 'Set1')
+birdsPlot <- birdsPlot + theme(panel.spacing=grid::unit(0.3,"lines"),
+                       axis.text = element_text(size = rel(0.5)),
+                       strip.text = element_text(face = "bold", size=11),
+                       strip.text.x = element_text(margin = margin(.1, 0, .1, 0, "cm")),
+                       strip.text.y = element_text(margin = margin(0, .1, 0, .1, "cm")))
+birdsPlot + theme(panel.border = element_rect(fill = NA, colour = "grey30", size = 0.1))
 
 
-
-
-
+```
 
 
 
