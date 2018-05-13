@@ -521,7 +521,7 @@ birdsPlot <- ggplot(data = birdDS_Long,
                     aes(x=birdDS_Long$measurement, 
                         y = birdType, 
                         fill = measurementType))
-birdsPlot <- birdsPlot + geom_density_ridges2(scale = 0.9, alpha=0.6, colour = 'white', size = 0.1) +
+birdsPlot <- birdsPlot + geom_density_ridges2(scale = 0.9, alpha=0.7, colour = 'white', size = 0.1) +
   theme(axis.text.y = element_text(vjust = 0)) +
   #theme_minimal(base_size = 14) +
   scale_x_continuous(expand = c(0.01, 0)) +
@@ -541,6 +541,8 @@ birdsPlot + theme(panel.border = element_rect(fill = NA, colour = "grey30", size
 ```
 
 ftp://cran.r-project.org/pub/R/web/packages/ggridges/ggridges.pdf 
+https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html 
+https://www.google.com.au/search?q=wading+bird&tbm=isch&tbs=rimg:CfS--S-sxOuTIjiEg6jXzItRbo17OwbSshNRNVFfCcDtU0dpbPuTdHhIPPiZ1rpRQtTnefQgkp7vHYWzZYeXipjB-ioSCYSDqNfMi1FuEcsNDMsvk7mOKhIJjXs7BtKyE1ERW94CeeqkqLQqEgk1UV8JwO1TRxGqQhRvUmio6yoSCWls-5N0eEg8ERo3BTsdCjmUKhIJ-JnWulFC1OcRdziC6XWUjHYqEgl59CCSnu8dhRFxPFMdGPZ7vSoSCbNlh5eKmMH6Eeof3qSS9Cgw&tbo=u&sa=X&ved=2ahUKEwjayMrayIDbAhXCyrwKHbidBKkQ9C96BAgBEBs&biw=1225&bih=1202&dpr=1
 
 
 ```{r, out.width="1920px", out.height="1080px"}
