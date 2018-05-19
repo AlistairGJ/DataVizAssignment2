@@ -1,0 +1,283 @@
+---
+title: "MATH2270 Assignment 2"
+subtitle: "Visualising Open Data"
+output: html_notebook
+---
+
+<style> body { text-align: justify} </style>
+
+## Student Details
+
+* Student Name (s3644119)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## About
+---
+https://www.kaggle.com/zhangjuefei/birds-bones-and-living-habits
+
+Context
+There are many kinds of birds: pigeons, ducks, ostriches, penguins... Some are good at flying, others can't fly but run fast. Some swim under water, others wading in shallow pool.
+
+According to their living environments and living habits, birds are classified into different ecological groups. There are 8 ecological groups of birds:
+---
+* Swimming Birds
+* Wading Birds
+* Terrestrial Birds
+* Raptors
+* Scansorial Birds
+* Singing Birds
+* Cursorial Birds (not included in dataset)
+* Marine Birds (not included in dataset)
+---
+
+First 6 groups are main and are covered by this dataset.
+
+Apparently, birds belong to different ecological groups have different appearances: flying birds have strong wings and wading birds have long legs. Their living habits are somewhat reflected in their bones' shapes. As data scientists we may think of examining the underlying relationship between sizes of bones and ecological groups , and recognising birds' ecological groups by their bones' shapes.
+
+Content
+There are 420 birds contained in this dataset. Each bird is represented by 10 measurements (features):
+---
+* Length and Diameter of Humerus
+* Length and Diameter of Ulna
+* Length and Diameter of Femur
+* Length and Diameter of Tibiotarsus
+* Length and Diameter of Tarsometatarsus
+---
+All measurements are continuous float numbers (mm) with missing values represented by empty strings. The skeletons of this dataset are collections of Natural History Museum of Los Angeles County. They belong to 21 orders, 153 genera, 245 species.
+
+Each bird has a label for its ecological group
+---
+* SW: Swimming Birds
+* W: Wading Birds
+* T: Terrestrial Birds
+* R: Raptors
+* P: Scansorial Birds
+* SO: Singing Birds
+---
+
+```{r}
+# Load your packages
+library(tidyr)
+library(dplyr)
+library(knitr)
+library(GGally)
+library(ggplot2)
+library(ggridges)
+```
+
+## Data
+
+```{r}
+# Load your data and prepare for visualisation
+birdDS <- read.csv("bird.csv")
+```
+
+## Exploring the Data
+
+```{r}
+# Load your data and prepare for visualisation
+head(birdDS)
+```
+
+```{r}
+# Load your data and prepare for visualisation
+colnames(birdDS)
+```
+
+```{r}
+colNamesFull <- c("ID", "HumerusLength", "HumerusDiameter", "UlnaLength", "UlnaDiameter",
+                  "FemurLength", "FemurDiameter", "TibiotarusLength", "TibiotarusDiameter",
+                  "TarsometatarusLength", "TarsometatarusDiameter", "EcologicalBirdType")
+```
+
+
+```{r}
+# Load your data and prepare for visualisation
+summary(birdDS)
+```
+
+```{r}
+# Load your data and prepare for visualisation
+str(birdDS)
+```
+
+```{r}
+# Load your data and prepare for visualisation
+head(birdDS)
+```
+
+```{r}
+# Check the species ID
+unique(birdDS$type)
+```
+
+#### Determine the mean values
+
+```{r}
+# SW - Swimming Birds
+SWbirds <- subset(birdDS, birdDS$type == "SW") # SW - Swimming Birds
+Wbirds <- subset(birdDS, birdDS$type == "W") # W - Wading Birds
+Tbirds <- subset(birdDS, birdDS$type == "T") # T - Terrestrial Birds
+Rbirds <- subset(birdDS, birdDS$type == "R") # R - Raptors
+Pbirds <- subset(birdDS, birdDS$type == "P") # P - Scansorial Birds
+SObirds <- subset(birdDS, birdDS$type == "SO") # SO - Singing Birds
+```
+
+
+
+```{r}
+# Filling NA - Rbirds
+Wbirds$feml[is.na(Wbirds$feml)] <- mean(Wbirds$feml, na.rm = TRUE)
+Wbirds$femw[is.na(Wbirds$femw)] <- mean(Wbirds$femw, na.rm = TRUE)
+```
+
+```{r}
+# Filling NA - Rbirds
+Rbirds$ulnal[is.na(Rbirds$ulnal)] <- mean(Rbirds$ulnal, na.rm = TRUE)
+Rbirds$ulnaw[is.na(Rbirds$ulnaw)] <- mean(Rbirds$ulnaw, na.rm = TRUE)
+Rbirds$tarl[is.na(Rbirds$tarl)] <- mean(Rbirds$tarl, na.rm = TRUE)
+Rbirds$tarw[is.na(Rbirds$tarw)] <- mean(Rbirds$tarw, na.rm = TRUE)
+```
+
+```{r}
+# Filling NA - SObirds
+SObirds$huml[is.na(SObirds$huml)] <- mean(SObirds$huml, na.rm = TRUE)
+SObirds$humw[is.na(SObirds$humw)] <- mean(SObirds$humw, na.rm = TRUE)
+SObirds$ulnal[is.na(SObirds$ulnal)] <- mean(SObirds$ulnal, na.rm = TRUE)
+SObirds$ulnaw[is.na(SObirds$ulnaw)] <- mean(SObirds$ulnaw, na.rm = TRUE)
+SObirds$feml[is.na(SObirds$feml)] <- mean(SObirds$feml, na.rm = TRUE)
+SObirds$tibl[is.na(SObirds$tibl)] <- mean(SObirds$tibl, na.rm = TRUE)
+SObirds$tibw[is.na(SObirds$tibw)] <- mean(SObirds$tibw, na.rm = TRUE)
+```
+
+```{r}
+birdDS_clean <- rbind(SWbirds, Wbirds, Tbirds, Rbirds, Pbirds, SObirds)
+```
+
+```{r}
+summary(birdDS_clean)
+```
+
+## Visualisation
+
+```{r}
+colnames(birdDS_clean)
+```
+
+```{r}
+allMeasurements <- c("huml", "humw", "ulnal", "ulnaw", "feml",  "femw",  "tibl",  "tibw",  "tarl",  "tarw")
+lengthMeasurements <- c("huml", "ulnal", "feml",  "tibl",  "tarl")
+widthMeasurements <- c("humw", "ulnaw",  "femw", "tibw", "tarw")
+```
+
+
+```{r}
+test_reorder <- birdDS_clean[,c(12,2,3,4,5,6,7,8,9,10,11,1)]
+```
+
+```{r}
+test <- birdDS_clean %>% gather("huml", "humw", "ulnal", "ulnaw", "feml",  "femw",  "tibl",  "tibw",  "tarl",  "tarw", 
+                   key = "id", value = "measurement")
+```
+
+```{r}
+SWbirdsLong <- SWbirds %>% gather("huml", "humw", "ulnal", "ulnaw", "feml",  "femw",  "tibl",  "tibw",  "tarl",  "tarw", 
+                   key = "type", value = "measurement")
+SWbirdsLong$id <- 'SW'
+WbirdsLong <- Wbirds %>% gather("huml", "humw", "ulnal", "ulnaw", "feml",  "femw",  "tibl",  "tibw",  "tarl",  "tarw", 
+                   key = "type", value = "measurement")
+WbirdsLong$id <- 'W'
+TbirdsLong <- Tbirds %>% gather("huml", "humw", "ulnal", "ulnaw", "feml",  "femw",  "tibl",  "tibw",  "tarl",  "tarw", 
+                   key = "type", value = "measurement")
+TbirdsLong$id <- 'T'
+RbirdsLong <- Rbirds %>% gather("huml", "humw", "ulnal", "ulnaw", "feml",  "femw",  "tibl",  "tibw",  "tarl",  "tarw", 
+                   key = "type", value = "measurement")
+RbirdsLong$id <- 'R'
+PbirdsLong <- Pbirds %>% gather("huml", "humw", "ulnal", "ulnaw", "feml",  "femw",  "tibl",  "tibw",  "tarl",  "tarw", 
+                   key = "type", value = "measurement")
+PbirdsLong$id <- 'P'
+SObirdsLong <- SObirds %>% gather("huml", "humw", "ulnal", "ulnaw", "feml",  "femw",  "tibl",  "tibw",  "tarl",  "tarw", 
+                   key = "type", value = "measurement")
+SObirdsLong$id <- 'SO'
+```
+
+```{r}
+birdDS_Long <- rbind(SWbirdsLong, WbirdsLong, TbirdsLong, RbirdsLong, PbirdsLong, SObirdsLong)
+```
+
+```{r}
+summary(birdDS_Long)
+```
+
+```{r}
+colnames(birdDS_Long) <- c("birdType", "bone", "measurement")
+```
+
+
+```{r}
+birdDS_Long$measurementType <- sapply(strsplit(as.character(birdDS_Long$bone), ""), tail, 1)
+birdDS_Long$boneAlone = substr(birdDS_Long$bone,1,nchar(birdDS_Long$bone)-1)
+```
+
+
+```{r}
+birdDS_Long$boneAlone <- factor(birdDS_Long$boneAlone)
+levels(birdDS_Long$boneAlone) <- c("Femur", "Humerus", "Tarsometatarus", "Tibiotarsus", "Ulna")
+levels(birdDS_Long$boneAlone)
+```
+
+
+```{r fig.height=18, fig.width=32}
+png('birds.png', units="in", width=32, height=18, res=300)
+birdsPlot <- ggplot(data = birdDS_Long, 
+                    aes(x=birdDS_Long$measurement, 
+                        y = birdType, 
+                        fill = measurementType))
+birdsPlot <- birdsPlot + geom_density_ridges2(scale = 0.9, alpha=0.7, colour = 'white', size = 0.5) +
+  labs(y = NULL, x = "Measurement (mm)", 
+       title = "Bird Bone Measurements",
+       subtitle = "Alistair Grevis-James s3644119",
+       caption="Source: kaggle.com/zhangjuefei/birds-bones-and-living-habits") +
+  theme(plot.title=element_text(size=62, 
+                                    face="bold", 
+                                    family="American Typewriter",
+                                    color="grey30"),
+        plot.subtitle=element_text(size=30, 
+                                    family="American Typewriter",
+                                    color="grey30"),
+        plot.caption = element_text(size=24, 
+                                   color="grey30"),
+        axis.title.x=element_text(vjust=0,
+                                  face = "bold",
+                                  family="American Typewriter",
+                                  size=30),
+        axis.text.y = element_text(vjust = 0, 
+                                   family="American Typewriter",
+                                   size = 30),
+        axis.text.x = element_text(size = 20,
+                                   family="American Typewriter"),
+        strip.text.x = element_text(size = 30,
+                                   family="American Typewriter"),
+        legend.text = element_text(size=24)) +
+  guides(fill = guide_legend(keywidth = 2.5, keyheight = 2.5)) +
+  scale_x_continuous(expand = c(0.01, 0), breaks = c(0, 25, 50, 75, 100, 125)) +
+  coord_cartesian(xlim = c(0, 150)) +  
+  scale_y_discrete(expand = c(0.01, 0), labels=c("Scansorial Birds", "Raptors", 
+                                                   "Song Birds", "Swimming Birds", 
+                                                   "Terrestrial Birds", "Wading Birds")) + 
+  facet_grid(.~boneAlone) +
+  theme(legend.title = element_blank()) +
+  theme(legend.position = c(0.95, 0.09)) +
+  scale_fill_manual(values = c("#ff7f00", "#377eb8"), labels=c("Length", "Width"))
+
+birdsPlot
+dev.off()
+```
+
+```{r fig.height=18, fig.width=32}
+birdsPlot
+```
+

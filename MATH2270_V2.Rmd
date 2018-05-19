@@ -179,33 +179,29 @@ birdDS_clean <- rbind(SWbirds, Wbirds, Tbirds, Rbirds, Pbirds, SObirds)
 summary(birdDS_clean)
 ```
 
-```{r}
+```{r}#
 ggplot(data = birdDS_clean, aes(x = type, y = huml)) + geom_boxplot()
 ```
 
-```{r}
+```{r}#
 ggplot(data = birdDS_clean, aes(x = type, y = humw)) + geom_boxplot()
 ```
 
-```{r}
+```{r}#
 ggplot(data = birdDS_clean, aes(x = type, y = ulnal)) + geom_boxplot()
 ```
 
-```{r}
+```{r}#
 ggplot(data = birdDS_clean, aes(x = type, y = ulnaw)) + geom_boxplot()
 ```
 
-```{r}
+```{r}#
 ggplot(data = birdDS_clean, aes(x = type, y = feml)) + geom_boxplot()
 ```
 
-```{r}
+```{r}#
 ggplot(data = birdDS_clean, aes(x = type, y = femw)) + geom_boxplot()
 ```
-
-
-
-
 
 # Could split out the length and width variables...
 
@@ -223,7 +219,7 @@ widthMeasurements <- c("humw", "ulnaw",  "femw", "tibw", "tarw")
 
 
 
-```{r}
+```{r}#
 # Visualise Your Data
 scatter_matrix <- ggpairs(data = birdDS_clean,
         columns = allMeasurements,
@@ -331,33 +327,33 @@ colnames(birdDS_Long) <- c("birdType", "bone", "measurement")
 ```
 
 
-```{r}
+```{r}#
 ggNew <- ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = bone, fill = birdType))
 ggNew + geom_density_ridges(aes(x = bone), 
            alpha = .8, color = "white") +
   theme_ridges(grid = FALSE)
 ```
 
-```{r}
+```{r}#
 ggNew <- ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = birdType, fill = bone))
 ggNew + geom_density_ridges(aes(x = bone), 
            alpha = .8, color = "white") +
   theme_ridges(grid = FALSE)
 ```
 
-```{r}
+```{r}#
 ggNew <- ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = birdType, fill = bone))
 ggNew + geom_density_ridges(aes(x = measurement), alpha = .8, color = "white") +
   theme_ridges(grid = FALSE)
 ```
 
-```{r}
+```{r}#
 ggNew <- ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = bone, fill = birdType))
 ggNew + geom_density_ridges(aes(x = measurement), alpha = .8, color = "white") +
   theme_ridges(grid = FALSE)
 ```
 
-```{r}
+```{r}#
 ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = bone, fill = birdType)) + 
    geom_density_ridges2(scale = 1) +
    theme_minimal(base_size = 14) + theme(axis.text.y = element_text(vjust = 0)) +
@@ -368,7 +364,7 @@ ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = bone, fill = birdT
 ```
 
 
-```{r}
+```{r}#
 ggplot(data = birdDS_Long, aes(x=birdDS_Long$measurement, y = bone, fill = birdType)) + 
    geom_density_ridges2(scale = 1) +
    theme_minimal(base_size = 14) + theme(axis.text.y = element_text(vjust = 0)) +
@@ -516,29 +512,89 @@ birdsPlot + geom_density_ridges2(scale = 1, alpha=0.6) +
   scale_fill_brewer(palette = 'Set1')
 ```
 
-```{r, out.width="1920px", out.height="1080px"}
+* Length and Diameter of Humerus
+* Length and Diameter of Ulna
+* Length and Diameter of Femur
+* Length and Diameter of Tibiotarsus
+* Length and Diameter of Tarsometatarsus
+
+```{r}
+birdDS_Long$boneAlone <- factor(birdDS_Long$boneAlone)
+levels(birdDS_Long$boneAlone) <- c("Femur", "Humerus", "Tarsometatarus", "Tibiotarsus", "Ulna")
+levels(birdDS_Long$boneAlone)
+```
+
+* SW: Swimming Birds
+* W: Wading Birds
+* T: Terrestrial Birds
+* R: Raptors
+* P: Scansorial Birds
+* SO: Singing Birds
+
+```{r fig.height=18, fig.width=32}
 birdsPlot <- ggplot(data = birdDS_Long, 
                     aes(x=birdDS_Long$measurement, 
                         y = birdType, 
                         fill = measurementType))
-birdsPlot <- birdsPlot + geom_density_ridges2(scale = 0.9, alpha=0.7, colour = 'white', size = 0.1) +
-  theme(axis.text.y = element_text(vjust = 0)) +
+birdsPlot <- birdsPlot + geom_density_ridges2(scale = 0.9, alpha=0.7, colour = 'white', size = 0.5) +
+  labs(y = NULL, x = "Measurement (mm)", 
+       title = "Bird Bone Measurements",
+       subtitle = "Alistair Grevis-James s3644119",
+       caption="Source: kaggle.com/zhangjuefei/birds-bones-and-living-habits") +
+  theme(plot.title=element_text(size=62, 
+                                    face="bold", 
+                                    family="American Typewriter",
+                                    color="grey30"),
+        plot.subtitle=element_text(size=30, 
+                                    family="American Typewriter",
+                                    color="grey30"),
+        plot.caption = element_text(size=24, 
+                                   color="grey30"),
+        axis.title.x=element_text(vjust=0,
+                                  face = "bold",
+                                  family="American Typewriter",
+                                  size=30),
+        axis.text.y = element_text(vjust = 0, 
+                                   family="American Typewriter",
+                                   size = 30),
+        axis.text.x = element_text(size = 20,
+                                   family="American Typewriter"),
+        strip.text.x = element_text(size = 30,
+                                   family="American Typewriter"),
+        legend.text = element_text(size=24)) +
+  guides(fill = guide_legend(keywidth = 2.5, keyheight = 2.5)) +
   #theme_minimal(base_size = 14) +
-  scale_x_continuous(expand = c(0.01, 0)) +
+  scale_x_continuous(expand = c(0.01, 0), breaks = c(0, 25, 50, 75, 100, 125)) +
   coord_cartesian(xlim = c(0, 150)) +  
-  scale_y_discrete(expand = c(0.01, 0)) + 
+  scale_y_discrete(expand = c(0.01, 0), labels=c("Scansorial Birds", "Raptors", 
+                                                   "Song Birds", "Swimming Birds", 
+                                                   "Terrestrial Birds", "Wading Birds")) + 
   facet_grid(.~boneAlone) +
   theme(legend.title = element_blank()) +
-  theme(legend.position='none') +
-  scale_fill_brewer(palette = 'Set1')
+  #theme(legend.position="bottom") +
+  theme(legend.position = c(0.95, 0.09)) +
+  scale_fill_manual(values = c("#ff7f00", "#377eb8"), labels=c("Length", "Width"))
 
-birdsPlot <- birdsPlot + theme(panel.spacing=grid::unit(0.3,"lines"),
-                       axis.text = element_text(size = rel(0.5)),
-                       strip.text = element_text(face = "bold", size=11),
-                       strip.text.x = element_text(margin = margin(.1, 0, .1, 0, "cm")),
-                       strip.text.y = element_text(margin = margin(0, .1, 0, .1, "cm")))
-birdsPlot + theme(panel.border = element_rect(fill = NA, colour = "grey30", size = 0.1))
+birdsPlot
+
+
+
+#birdsPlot <- birdsPlot + theme(panel.spacing=grid::unit(0.3,"lines"),
+#                       axis.text = element_text(size = rel(0.5)),
+#                       strip.text = element_text(face = "bold", size=9),
+#                       strip.text.x = element_text(margin = margin(.1, 0, .1, 0, "cm")),
+#                       strip.text.y = element_text(margin = margin(0, .1, 0, .1, "cm")))
+#birdsPlot + theme(panel.border = element_rect(fill = NA, colour = "grey30", size = 0.1))
 ```
+
+
+```{r}
+library("png")
+
+
+
+```
+
 
 ftp://cran.r-project.org/pub/R/web/packages/ggridges/ggridges.pdf 
 https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html 
